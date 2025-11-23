@@ -13,7 +13,7 @@ Your backend is deployed but migrations haven't been run yet. Follow these steps
 
 2. Set the production DATABASE_URL and run migrations:
    ```powershell
-   $env:DATABASE_URL="postgresql://postgres:WmMtlzxSqNTzikLCVgOcrUkvrWeUzwDy@turntable.proxy.rlwy.net:33721/railway"
+   $env:DATABASE_URL="postgresql://postgres:[password]@turntable.proxy.rlwy.net:33721/railway"
    $env:NODE_ENV="production"
    npm run migrate
    ```
@@ -27,7 +27,7 @@ Your backend is deployed but migrations haven't been run yet. Follow these steps
 
 2. Set the production DATABASE_URL and run migrations:
    ```bash
-   export DATABASE_URL="postgresql://postgres:WmMtlzxSqNTzikLCVgOcrUkvrWeUzwDy@turntable.proxy.rlwy.net:33721/railway"
+   export DATABASE_URL="postgresql://postgres:[password]@turntable.proxy.rlwy.net:33721/railway"
    export NODE_ENV=production
    npm run migrate
    ```
@@ -38,7 +38,7 @@ If you prefer to run SQL directly:
 
 1. Connect to the database:
    ```bash
-   PGPASSWORD=WmMtlzxSqNTzikLCVgOcrUkvrWeUzwDy psql -h turntable.proxy.rlwy.net -U postgres -p 33721 -d railway
+   PGPASSWORD=[password] psql -h turntable.proxy.rlwy.net -U postgres -p 33721 -d railway
    ```
 
 2. Run the SQL from the migration file. The migration creates:
@@ -70,7 +70,7 @@ npm install && npm run build && npm run migrate
 2. **Create a test student:**
    ```powershell
    # In server folder
-   $env:DATABASE_URL="postgresql://postgres:WmMtlzxSqNTzikLCVgOcrUkvrWeUzwDy@turntable.proxy.rlwy.net:33721/railway"
+   $env:DATABASE_URL="postgresql://postgres:[password]@turntable.proxy.rlwy.net:33721/railway"
    npm run create-test-student
    ```
 
@@ -83,7 +83,7 @@ npm install && npm run build && npm run migrate
 **Run migrations:**
 ```powershell
 cd server
-$env:DATABASE_URL="postgresql://postgres:WmMtlzxSqNTzikLCVgOcrUkvrWeUzwDy@turntable.proxy.rlwy.net:33721/railway"
+$env:DATABASE_URL="postgresql://postgres:[password]@turntable.proxy.rlwy.net:33721/railway"
 $env:NODE_ENV="production"
 npm run migrate
 ```
@@ -91,7 +91,7 @@ npm run migrate
 **Create test student:**
 ```powershell
 cd server
-$env:DATABASE_URL="postgresql://postgres:WmMtlzxSqNTzikLCVgOcrUkvrWeUzwDy@turntable.proxy.rlwy.net:33721/railway"
+$env:DATABASE_URL="postgresql://postgres:[password]@turntable.proxy.rlwy.net:33721/railway"
 npm run create-test-student
 ```
 

@@ -21,7 +21,8 @@
     "axios": "^1.6.2",
     "react-router-dom": "^6.20.1",
     "@expo/vector-icons": "^13.0.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "@expo/webpack-config": "^19.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
