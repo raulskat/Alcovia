@@ -21,11 +21,34 @@ const httpServer = http.createServer(app);
 const PORT = process.env.PORT || 3000;
 const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:8081';
 
-// Middleware
-app.use(cors({ 
-  origin: CORS_ORIGIN,
+// CORS configuration - allow localhost and all Vercel preview URLs
+const corsOptions = {
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // Allow localhost for development
+    if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+      return callback(null, true);
+    }
+    
+    // Allow all Vercel preview URLs
+    if (origin.includes('.vercel.app')) {
+      return callback(null, true);
+    }
+    
+    // Allow specific CORS_ORIGIN if set
+    if (CORS_ORIGIN && origin === CORS_ORIGIN) {
+      return callback(null, true);
+    }
+    
+    callback(new Error('Not allowed by CORS'));
+  },
   credentials: true 
-}));
+};
+
+// Middleware
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Initialize repositories (Dependency Injection)
@@ -52,8 +75,8 @@ const interventionController = new InterventionController(
   interventionRepo
 );
 
-// Initialize WebSocket
-const wsManager = new WebSocketManager(httpServer, CORS_ORIGIN);
+// Initialize WebSocket - pass function to check origin
+const wsManager = new WebSocketManager(httpServer, corsOptions.origin);
 
 // Helper to emit status changes
 const emitStatusChange = (studentId: string, status: any) => {

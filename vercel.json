@@ -2,20 +2,6 @@
   "buildCommand": "cd client && npm install && npm run build",
   "outputDirectory": "client/web-build",
   "installCommand": "cd client && npm install",
-  "framework": null,
-  "routes": [
-    {
-      "src": "/manifest.json",
-      "dest": "/manifest.json"
-    },
-    {
-      "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|json))",
-      "dest": "/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
-  ]
+  "framework": null
 }
 

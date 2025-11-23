@@ -5,11 +5,12 @@ import { StudentStatus } from '../types';
 export class WebSocketManager {
   private io: SocketIOServer;
 
-  constructor(httpServer: HttpServer, corsOrigin: string) {
+  constructor(httpServer: HttpServer, corsOrigin: string | ((origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => void)) {
     this.io = new SocketIOServer(httpServer, {
       cors: {
         origin: corsOrigin,
         methods: ['GET', 'POST'],
+        credentials: true,
       },
     });
 
