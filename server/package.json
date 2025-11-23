@@ -1,0 +1,46 @@
+{
+  "name": "intervention-engine-backend",
+  "version": "1.0.0",
+  "description": "Closed-Loop Intervention Engine Backend",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "migrate": "npx knex migrate:latest --knexfile knexfile.cjs",
+    "migrate:rollback": "npx knex migrate:rollback --knexfile knexfile.cjs",
+    "migrate:make": "npx knex migrate:make --knexfile knexfile.cjs",
+    "create-test-student": "ts-node src/scripts/create-test-student.ts",
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "pg": "^8.11.3",
+    "knex": "^2.5.1",
+    "uuid": "^9.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "socket.io": "^4.6.1",
+    "axios": "^1.6.2",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17",
+    "@types/node": "^20.10.5",
+    "@types/pg": "^8.10.9",
+    "@types/uuid": "^9.0.7",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/socket.io": "^3.0.2",
+    "typescript": "^5.3.3",
+    "ts-node-dev": "^2.0.0",
+    "@types/jest": "^29.5.11",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1"
+  }
+}
+

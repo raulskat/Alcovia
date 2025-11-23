@@ -1,0 +1,187 @@
+{
+  "name": "Student Intervention Mentor Dispatcher",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "intervention",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "Webhook - Intervention Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "webhookId": "intervention-trigger"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "student-info",
+              "name": "student_name",
+              "value": "={{ $json.name || $json.student_id }}",
+              "type": "string"
+            },
+            {
+              "id": "student-id",
+              "name": "student_id",
+              "value": "={{ $json.student_id }}",
+              "type": "string"
+            },
+            {
+              "id": "quiz-score",
+              "name": "quiz_score",
+              "value": "={{ $json.quiz_score }}",
+              "type": "number"
+            },
+            {
+              "id": "focus-minutes",
+              "name": "focus_minutes",
+              "value": "={{ $json.focus_minutes }}",
+              "type": "number"
+            },
+            {
+              "id": "timestamp",
+              "name": "timestamp",
+              "value": "={{ $json.timestamp || $now }}",
+              "type": "string"
+            },
+            {
+              "id": "approve-url",
+              "name": "approve_url",
+              "value": "=https://{{ $env.BACKEND_URL }}/api/v1/assign-intervention?student_id={{ $json.student_id }}&task=Read%20Chapter%204&mentor=mentor@org&token={{ $workflow.generateMentorToken($json.student_id) }}",
+              "type": "string"
+            },
+            {
+              "id": "reject-url",
+              "name": "reject_url",
+              "value": "=https://{{ $env.BACKEND_URL }}/api/v1/assign-intervention?student_id={{ $json.student_id }}&task=Escalate%20to%20Head%20Mentor&mentor=escalation",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "format-data",
+      "name": "Format Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.3,
+      "position": [450, 300]
+    },
+    {
+      "parameters": {
+        "fromEmail": "=noreply@intervention-engine.com",
+        "toEmail": "={{ $env.MENTOR_EMAIL || 'mentor@org.com' }}",
+        "subject": "=Student Needs Intervention: {{ $json.student_name }}",
+        "text": "=A student needs intervention:\n\nStudent: {{ $json.student_name }} (ID: {{ $json.student_id }})\nQuiz Score: {{ $json.quiz_score }}/10\nFocus Minutes: {{ $json.focus_minutes }}\nTimestamp: {{ $json.timestamp }}\n\nPlease review and take action:\n\n✅ Approve & Assign Task: {{ $json.approve_url }}\n❌ Reject / Escalate: {{ $json.reject_url }}\n\nThis link will expire in 1 hour.",
+        "options": {}
+      },
+      "id": "send-email",
+      "name": "Send Email to Mentor",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [650, 300],
+      "credentials": {
+        "smtp": {
+          "id": "1",
+          "name": "SMTP Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"status\": \"ok\", \"message\": \"Mentor notification sent\", \"student_id\": $json.student_id } }}",
+        "options": {}
+      },
+      "id": "respond",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [850, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.action }}",
+              "operation": "equals",
+              "value2": "approve"
+            }
+          ]
+        }
+      },
+      "id": "check-approval",
+      "name": "Check Approval",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1050, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://{{ $env.BACKEND_URL }}/api/v1/assign-intervention",
+        "authentication": "none",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "student_id",
+              "value": "={{ $json.student_id }}"
+            },
+            {
+              "name": "intervention_task",
+              "value": "={{ $json.task || 'Read Chapter 4' }}"
+            },
+            {
+              "name": "mentor",
+              "value": "={{ $json.mentor || 'mentor@org' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "assign-intervention",
+      "name": "Assign Intervention to Backend",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1250, 200]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"status\": \"success\", \"message\": \"Intervention assigned successfully\" } }}"
+      },
+      "id": "success-response",
+      "name": "Success Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [1450, 200]
+    }
+  ],
+  "connections": {
+    "Webhook - Intervention Trigger": {
+      "main": [[{"node": "Format Data", "type": "main", "index": 0}]]
+    },
+    "Format Data": {
+      "main": [[{"node": "Send Email to Mentor", "type": "main", "index": 0}]]
+    },
+    "Send Email to Mentor": {
+      "main": [[{"node": "Respond to Webhook", "type": "main", "index": 0}]]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 1,
+  "updatedAt": "2025-11-22T00:00:00.000Z",
+  "versionId": "1"
+}
+
